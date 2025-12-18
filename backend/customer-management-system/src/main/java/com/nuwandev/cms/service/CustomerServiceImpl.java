@@ -1,6 +1,8 @@
 package com.nuwandev.cms.service;
 
 import com.nuwandev.cms.domain.Customer;
+import com.nuwandev.cms.exception.CustomerAlreadyExistsException;
+import com.nuwandev.cms.exception.CustomerNotFoundException;
 import com.nuwandev.cms.repository.CustomerRepository;
 import org.springframework.stereotype.Service;
 
@@ -22,17 +24,13 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public Customer getCustomerById(String id) {
-//        Optional<Customer> optionalCustomer = customerRepository.findById(id);
-//        if (optionalCustomer.isEmpty()) {
-//            throw new RuntimeException("Customer not found");
-//        }
-//        return optionalCustomer.get();
-//        similar to above code but better and smaller
-        return customerRepository.findById(id).orElseThrow(() -> new RuntimeException("Customer not found"));
+        return customerRepository.findById(id).orElseThrow(() -> new CustomerNotFoundException("Customer not found"));
     }
 
     @Override
     public Customer createCustomer(Customer customer) {
+        Customer existing = customerRepository.findByEmail(customer.getEmail());
+        if (existing != null) throw new CustomerAlreadyExistsException("Customer already exists");
         return customerRepository.save(customer);
     }
 
@@ -41,7 +39,6 @@ public class CustomerServiceImpl implements CustomerService {
         Customer existing = getCustomerById(id);
         existing.setFirstName(customer.getFirstName());
         existing.setLastName(customer.getLastName());
-        existing.setEmail(customer.getEmail());
         existing.setPhone(customer.getPhone());
         existing.setStatus(customer.getStatus());
         return customerRepository.save(existing);
@@ -49,6 +46,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public void deleteCustomer(String id) {
+        Customer existing = getCustomerById(id);
         customerRepository.deleteById(id);
     }
 }
