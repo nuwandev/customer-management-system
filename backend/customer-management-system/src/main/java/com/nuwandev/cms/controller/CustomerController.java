@@ -1,7 +1,10 @@
 package com.nuwandev.cms.controller;
 
 import com.nuwandev.cms.domain.Customer;
+import com.nuwandev.cms.dto.CustomerRequestDto;
+import com.nuwandev.cms.dto.CustomerResponseDto;
 import com.nuwandev.cms.service.CustomerService;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,23 +20,23 @@ public class CustomerController {
     }
 
     @GetMapping
-    public List<Customer> getAllCustomers() {
+    public List<CustomerResponseDto> getAllCustomers() {
         return customerService.getAllCustomers();
     }
 
     @GetMapping("/{id}")
-    public Customer getCustomerById(@PathVariable String id) {
+    public CustomerResponseDto getCustomerById(@PathVariable String id) {
         return customerService.getCustomerById(id);
     }
 
     @PostMapping
-    public Customer createCustomer(@RequestBody @Valid Customer customer) {
-        return customerService.createCustomer(customer);
+    public CustomerResponseDto createCustomer(@RequestBody @Valid CustomerRequestDto dto) {
+        return customerService.createCustomer(dto);
     }
 
     @PutMapping("/{id}")
-    public Customer updateCustomer(@PathVariable String id, @RequestBody @Valid Customer customer) {
-        return customerService.updateCustomer(id, customer);
+    public CustomerResponseDto updateCustomer(@PathVariable String id, @RequestBody @Valid CustomerRequestDto dto) {
+        return customerService.updateCustomer(id, dto);
     }
 
     @DeleteMapping("/{id}")

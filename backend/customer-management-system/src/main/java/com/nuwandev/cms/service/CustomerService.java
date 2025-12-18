@@ -1,17 +1,20 @@
 package com.nuwandev.cms.service;
 
 import com.nuwandev.cms.domain.Customer;
+import com.nuwandev.cms.dto.CustomerRequestDto;
+import com.nuwandev.cms.dto.CustomerResponseDto;
 
 import java.util.List;
 
 public interface CustomerService {
-    List<Customer> getAllCustomers();
 
-    Customer getCustomerById(String id);
+    List<CustomerResponseDto> getAllCustomers();
 
-    Customer createCustomer(Customer customer);
+    CustomerResponseDto getCustomerById(String id);
 
-    Customer updateCustomer(String id, Customer customer);
+    CustomerResponseDto createCustomer(CustomerRequestDto dto);
+
+    CustomerResponseDto updateCustomer(String id, CustomerRequestDto dto);
 
     void deleteCustomer(String id);
 }

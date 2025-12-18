@@ -1,63 +1,28 @@
-package com.nuwandev.cms.domain;
+package com.nuwandev.cms.dto;
 
-import com.nuwandev.cms.dto.CustomerRequestDto;
-import jakarta.persistence.*;
+import com.nuwandev.cms.domain.Customer;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
-@Entity
-@Table(name = "customers")
-public class Customer {
-
-    @Id
-    @Column(length = 36, nullable = false, updatable = false)
+public class CustomerResponseDto {
     private String id;
-
-    @Column(nullable = false)
     private String firstName;
-
-    @Column(nullable = false)
     private String lastName;
-
-    @Column(nullable = false, unique = true)
     private String email;
-
     private String phone;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private Status status;
-
-    @Column(nullable = false, updatable = false)
+    private Customer.Status status;
     private LocalDateTime createdAt;
-
     private LocalDateTime updatedAt;
 
-    @PrePersist
-    protected void onCreate() {
-        this.id = UUID.randomUUID().toString();
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = this.createdAt;
-        this.status = Status.ACTIVE;
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        this.updatedAt = LocalDateTime.now();
-    }
-
-    public enum Status {ACTIVE, INACTIVE}
-
-    public Customer() {
-    }
-
-    public Customer(CustomerRequestDto dto) {
-        this.firstName = dto.getFirstName();
-        this.lastName = dto.getLastName();
-        this.email = dto.getEmail();
-        this.phone = dto.getPhone();
-        if (dto.getStatus() != null) this.status = dto.getStatus();
+    public CustomerResponseDto(Customer customer) {
+        this.id = customer.getId();
+        this.firstName = customer.getFirstName();
+        this.lastName = customer.getLastName();
+        this.email = customer.getEmail();
+        this.phone = customer.getPhone();
+        this.status = customer.getStatus();
+        this.createdAt = customer.getCreatedAt();
+        this.updatedAt = customer.getUpdatedAt();
     }
 
     public void setId(String id) {
@@ -80,7 +45,7 @@ public class Customer {
         this.phone = phone;
     }
 
-    public void setStatus(Status status) {
+    public void setStatus(Customer.Status status) {
         this.status = status;
     }
 
@@ -112,7 +77,7 @@ public class Customer {
         return phone;
     }
 
-    public Status getStatus() {
+    public Customer.Status getStatus() {
         return status;
     }
 
