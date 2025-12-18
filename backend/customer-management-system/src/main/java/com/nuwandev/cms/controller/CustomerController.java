@@ -1,8 +1,8 @@
 package com.nuwandev.cms.controller;
 
-import com.nuwandev.cms.domain.Customer;
-import com.nuwandev.cms.dto.CustomerRequestDto;
+import com.nuwandev.cms.dto.CustomerCreateRequestDto;
 import com.nuwandev.cms.dto.CustomerResponseDto;
+import com.nuwandev.cms.dto.CustomerUpdateRequestDto;
 import com.nuwandev.cms.service.CustomerService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -32,12 +32,12 @@ public class CustomerController {
     }
 
     @PostMapping
-    public ResponseEntity<CustomerResponseDto> createCustomer(@RequestBody @Valid CustomerRequestDto dto) {
+    public ResponseEntity<CustomerResponseDto> createCustomer(@RequestBody @Valid CustomerCreateRequestDto dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(customerService.createCustomer(dto));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CustomerResponseDto> updateCustomer(@PathVariable String id, @RequestBody @Valid CustomerRequestDto dto) {
+    public ResponseEntity<CustomerResponseDto> updateCustomer(@PathVariable String id, @RequestBody @Valid CustomerUpdateRequestDto dto) {
         return ResponseEntity.ok(customerService.updateCustomer(id, dto));
     }
 

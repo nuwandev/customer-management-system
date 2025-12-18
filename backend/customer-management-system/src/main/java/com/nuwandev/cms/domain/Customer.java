@@ -1,6 +1,6 @@
 package com.nuwandev.cms.domain;
 
-import com.nuwandev.cms.dto.CustomerRequestDto;
+import com.nuwandev.cms.dto.CustomerCreateRequestDto;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -52,7 +52,7 @@ public class Customer {
     public Customer() {
     }
 
-    public Customer(CustomerRequestDto dto) {
+    public Customer(CustomerCreateRequestDto dto) {
         this.firstName = dto.getFirstName();
         this.lastName = dto.getLastName();
         this.email = dto.getEmail();

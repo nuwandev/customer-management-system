@@ -4,7 +4,7 @@ import com.nuwandev.cms.domain.Customer;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
-public class CustomerRequestDto {
+public class CustomerCreateRequestDto {
 
     @NotBlank
     private String firstName;
@@ -20,7 +20,7 @@ public class CustomerRequestDto {
 
     private Customer.Status status;
 
-    public CustomerRequestDto(String firstName, String lastName, String email, String phone, Customer.Status status) {
+    public CustomerCreateRequestDto(String firstName, String lastName, String email, String phone, Customer.Status status) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;

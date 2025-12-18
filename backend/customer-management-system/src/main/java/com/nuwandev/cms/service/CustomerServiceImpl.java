@@ -1,8 +1,9 @@
 package com.nuwandev.cms.service;
 
 import com.nuwandev.cms.domain.Customer;
-import com.nuwandev.cms.dto.CustomerRequestDto;
+import com.nuwandev.cms.dto.CustomerCreateRequestDto;
 import com.nuwandev.cms.dto.CustomerResponseDto;
+import com.nuwandev.cms.dto.CustomerUpdateRequestDto;
 import com.nuwandev.cms.exception.CustomerAlreadyExistsException;
 import com.nuwandev.cms.exception.CustomerNotFoundException;
 import com.nuwandev.cms.repository.CustomerRepository;
@@ -37,7 +38,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public CustomerResponseDto createCustomer(CustomerRequestDto dto) {
+    public CustomerResponseDto createCustomer(CustomerCreateRequestDto dto) {
         Customer existing = customerRepository.findByEmail(dto.getEmail());
         if (existing != null) throw new CustomerAlreadyExistsException(dto.getEmail());
 
@@ -48,7 +49,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public CustomerResponseDto updateCustomer(String id, CustomerRequestDto dto) {
+    public CustomerResponseDto updateCustomer(String id, CustomerUpdateRequestDto dto) {
         Customer customer = customerRepository.findById(id).orElseThrow(() -> new CustomerNotFoundException(id));
         customer.setFirstName(dto.getFirstName());
         customer.setLastName(dto.getLastName());
