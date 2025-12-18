@@ -24,13 +24,13 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public Customer getCustomerById(String id) {
-        return customerRepository.findById(id).orElseThrow(() -> new CustomerNotFoundException("Customer not found"));
+        return customerRepository.findById(id).orElseThrow(() -> new CustomerNotFoundException(id));
     }
 
     @Override
     public Customer createCustomer(Customer customer) {
         Customer existing = customerRepository.findByEmail(customer.getEmail());
-        if (existing != null) throw new CustomerAlreadyExistsException("Customer already exists");
+        if (existing != null) throw new CustomerAlreadyExistsException(customer.getEmail());
         return customerRepository.save(customer);
     }
 
