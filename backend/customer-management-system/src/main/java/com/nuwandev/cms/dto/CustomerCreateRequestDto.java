@@ -6,14 +6,14 @@ import jakarta.validation.constraints.NotBlank;
 
 public class CustomerCreateRequestDto {
 
-    @NotBlank
+    @NotBlank(message = "First name is required")
     private String firstName;
 
-    @NotBlank
+    @NotBlank(message = "Last name is required")
     private String lastName;
 
     @Email
-    @NotBlank
+    @NotBlank(message = "Email is required")
     private String email;
 
     private String phone;

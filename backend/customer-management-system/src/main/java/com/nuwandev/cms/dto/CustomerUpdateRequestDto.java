@@ -1,15 +1,14 @@
 package com.nuwandev.cms.dto;
 
 import com.nuwandev.cms.domain.Customer;
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
 public class CustomerUpdateRequestDto {
 
-    @NotBlank
+    @NotBlank(message = "First name is required")
     private String firstName;
 
-    @NotBlank
+    @NotBlank(message = "Last name is required")
     private String lastName;
 
     private String phone;
