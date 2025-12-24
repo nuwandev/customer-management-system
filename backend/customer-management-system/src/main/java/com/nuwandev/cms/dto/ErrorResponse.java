@@ -1,11 +1,13 @@
 package com.nuwandev.cms.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import org.springframework.validation.FieldError;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class ErrorResponse {
     private String status;
     private String message;

@@ -1,5 +1,7 @@
 package com.nuwandev.cms.exception;
 
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import com.nuwandev.cms.dto.ErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,6 +38,23 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
+        Throwable cause = ex.getCause();
+        if (cause instanceof InvalidFormatException) {
+            InvalidFormatException ife = (InvalidFormatException) cause;
+            String fieldName = ife.getPath().isEmpty() ? "unknown" : ife.getPath().get(0).getFieldName();
+            String allowedValues = "";
+            if (ife.getTargetType().isEnum()) {
+                Object[] enumConstants = ife.getTargetType().getEnumConstants();
+                allowedValues = String.join(", ",
+                        java.util.Arrays.stream(enumConstants)
+                                .map(Object::toString)
+                                .toArray(String[]::new)
+                );
+            }
+            String message = String.format("Invalid value for field '%s'. Allowed values: %s", fieldName, allowedValues);
+            ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.getReasonPhrase(), message);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+        }
         ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.getReasonPhrase(), "Invalid request body: please provide valid JSON/XML");
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
