@@ -1,6 +1,7 @@
 package com.nuwandev.cms.domain;
 
 import com.nuwandev.cms.dto.CustomerCreateRequestDto;
+import com.nuwandev.cms.enums.Status;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -46,8 +47,6 @@ public class Customer {
     protected void onUpdate() {
         this.updatedAt = LocalDateTime.now();
     }
-
-    public enum Status {ACTIVE, INACTIVE}
 
     public Customer() {
     }

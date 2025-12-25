@@ -1,6 +1,7 @@
 package com.nuwandev.cms.dto;
 
 import com.nuwandev.cms.domain.Customer;
+import com.nuwandev.cms.enums.Status;
 
 import java.time.LocalDateTime;
 
@@ -10,7 +11,7 @@ public class CustomerResponseDto {
     private String lastName;
     private String email;
     private String phone;
-    private Customer.Status status;
+    private Status status;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -45,7 +46,7 @@ public class CustomerResponseDto {
         this.phone = phone;
     }
 
-    public void setStatus(Customer.Status status) {
+    public void setStatus(Status status) {
         this.status = status;
     }
 
@@ -77,7 +78,7 @@ public class CustomerResponseDto {
         return phone;
     }
 
-    public Customer.Status getStatus() {
+    public Status getStatus() {
         return status;
     }
 

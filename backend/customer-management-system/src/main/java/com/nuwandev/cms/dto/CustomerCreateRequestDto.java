@@ -1,6 +1,7 @@
 package com.nuwandev.cms.dto;
 
 import com.nuwandev.cms.domain.Customer;
+import com.nuwandev.cms.enums.Status;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
@@ -18,9 +19,9 @@ public class CustomerCreateRequestDto {
 
     private String phone;
 
-    private Customer.Status status;
+    private Status status;
 
-    public CustomerCreateRequestDto(String firstName, String lastName, String email, String phone, Customer.Status status) {
+    public CustomerCreateRequestDto(String firstName, String lastName, String email, String phone, Status status) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
@@ -44,7 +45,7 @@ public class CustomerCreateRequestDto {
         this.phone = phone;
     }
 
-    public void setStatus(Customer.Status status) {
+    public void setStatus(Status status) {
         this.status = status;
     }
 
@@ -64,7 +65,7 @@ public class CustomerCreateRequestDto {
         return phone;
     }
 
-    public Customer.Status getStatus() {
+    public Status getStatus() {
         return status;
     }
 }
