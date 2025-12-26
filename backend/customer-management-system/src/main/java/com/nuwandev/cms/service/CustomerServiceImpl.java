@@ -7,12 +7,14 @@ import com.nuwandev.cms.dto.CustomerUpdateRequestDto;
 import com.nuwandev.cms.exception.CustomerAlreadyExistsException;
 import com.nuwandev.cms.exception.CustomerNotFoundException;
 import com.nuwandev.cms.repository.CustomerRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Transactional
 public class CustomerServiceImpl implements CustomerService {
 
     private final CustomerRepository customerRepository;
