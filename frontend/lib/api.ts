@@ -1,152 +1,105 @@
-import {
-  Customer,
-  CreateCustomerDTO,
-  UpdateCustomerDTO,
-  ErrorResponse,
-} from "./types";
+import { Customer } from "@/lib/types";
 
 const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080/api";
+  process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api";
 
-// Query parameters for pagination and sorting (ready for backend implementation)
-export interface QueryParams {
-  page?: number; // 0-indexed page number for backend
-  size?: number; // Number of items per page
-  sort?: string; // Sort field and direction (e.g., "firstName,asc")
-  search?: string; // Search query
-}
-
-// Paginated response from backend (when implemented)
-export interface PagedResponse<T> {
-  content: T[];
-  totalElements: number;
-  totalPages: number;
-  size: number;
-  number: number;
-}
-
-class ApiError extends Error {
+// Error Classes
+export class ApiError extends Error {
   constructor(
-    public status: number,
-    public error: string,
-    public details?: ErrorResponse
+    message: string,
+    public status?: number,
+    public details?: unknown
   ) {
-    super(details?.message || error);
+    super(message);
     this.name = "ApiError";
   }
 }
 
-async function handleResponse<T>(response: Response): Promise<T> {
-  if (!response.ok) {
-    let errorDetails: ErrorResponse | undefined;
+export class NetworkError extends Error {
+  constructor(message: string = "Network connection failed") {
+    super(message);
+    this.name = "NetworkError";
+  }
+}
 
-    try {
-      errorDetails = await response.json();
-    } catch {
-      // If JSON parsing fails, create a basic error
-      errorDetails = {
-        status: response.status,
-        error: response.statusText,
-        message: `Request failed with status ${response.status}`,
-      };
+// Error Utilities
+export function getErrorMessage(error: unknown): string {
+  if (error instanceof NetworkError) return error.message;
+  if (error instanceof ApiError) return error.message;
+  if (error instanceof Error) return error.message;
+  return "An unexpected error occurred";
+}
+
+export function isNetworkError(error: unknown): boolean {
+  return error instanceof NetworkError;
+}
+
+// HTTP Client
+async function fetchAPI<T>(
+  endpoint: string,
+  options: RequestInit = {}
+): Promise<T> {
+  try {
+    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+      ...options,
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        ...options.headers,
+      },
+    });
+
+    if (!response.ok) {
+      let errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+      try {
+        const errorData = await response.json();
+        errorMessage = errorData.message || errorMessage;
+      } catch {
+        // Ignore JSON parsing errors
+      }
+      throw new ApiError(errorMessage, response.status);
     }
 
-    throw new ApiError(response.status, response.statusText, errorDetails);
+    if (response.status === 204) return undefined as T;
+    return await response.json();
+  } catch (error) {
+    if (error instanceof ApiError) throw error;
+    if (error instanceof TypeError && error.message.includes("fetch")) {
+      throw new NetworkError(
+        "Unable to connect to server. Please check if backend is running."
+      );
+    }
+    throw new ApiError(
+      error instanceof Error ? error.message : "Unknown error"
+    );
   }
-
-  // Handle 204 No Content
-  if (response.status === 204) {
-    return undefined as T;
-  }
-
-  return response.json();
 }
 
-/**
- * Build query string from params object
- */
-function buildQueryString(params: QueryParams): string {
-  const searchParams = new URLSearchParams();
-
-  if (params.page !== undefined)
-    searchParams.set("page", params.page.toString());
-  if (params.size !== undefined)
-    searchParams.set("size", params.size.toString());
-  if (params.sort) searchParams.set("sort", params.sort);
-  if (params.search) searchParams.set("search", params.search);
-
-  const queryString = searchParams.toString();
-  return queryString ? `?${queryString}` : "";
-}
-
+// Customer API
 export const customerApi = {
-  // Get all customers (with optional pagination/sorting)
-  // Currently returns all customers; when backend implements pagination,
-  // it will return PagedResponse<Customer>
-  async getAll(params?: QueryParams): Promise<Customer[]> {
-    const queryString = params ? buildQueryString(params) : "";
-    const response = await fetch(`${API_BASE_URL}/customers${queryString}`, {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-      },
-    });
-
-    return handleResponse<Customer[]>(response);
-    // Future: return handleResponse<PagedResponse<Customer>>(response);
+  getAll(): Promise<Customer[]> {
+    return fetchAPI<Customer[]>("/customers");
   },
 
-  // Get customer by ID
-  async getById(id: number): Promise<Customer> {
-    const response = await fetch(`${API_BASE_URL}/customers/${id}`, {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-      },
-    });
-
-    return handleResponse<Customer>(response);
+  getById(id: string): Promise<Customer> {
+    return fetchAPI<Customer>(`/customers/${id}`);
   },
 
-  // Create new customer
-  async create(data: CreateCustomerDTO): Promise<Customer> {
-    const response = await fetch(`${API_BASE_URL}/customers`, {
+  create(data: Omit<Customer, "id">): Promise<Customer> {
+    return fetchAPI<Customer>("/customers", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
       body: JSON.stringify(data),
     });
-
-    return handleResponse<Customer>(response);
   },
 
-  // Update customer
-  async update(id: number, data: UpdateCustomerDTO): Promise<Customer> {
-    const response = await fetch(`${API_BASE_URL}/customers/${id}`, {
+  update(id: string, data: Partial<Customer>): Promise<Customer> {
+    return fetchAPI<Customer>(`/customers/${id}`, {
       method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
       body: JSON.stringify(data),
     });
-
-    return handleResponse<Customer>(response);
   },
 
-  // Delete customer
-  async delete(id: number): Promise<void> {
-    const response = await fetch(`${API_BASE_URL}/customers/${id}`, {
-      method: "DELETE",
-      headers: {
-        Accept: "application/json",
-      },
-    });
-
-    return handleResponse<void>(response);
+  delete(id: string): Promise<void> {
+    return fetchAPI<void>(`/customers/${id}`, { method: "DELETE" });
   },
 };
-
-export { ApiError };

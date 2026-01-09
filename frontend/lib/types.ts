@@ -1,10 +1,9 @@
-// Core entity types
 export interface Address {
   line1: string;
-  line2?: string | null;
+  line2?: string;
   city: string;
-  state?: string | null;
-  postalCode?: string | null;
+  state?: string;
+  postalCode?: string;
   country: string;
 }
 
@@ -13,47 +12,8 @@ export interface Customer {
   firstName: string;
   lastName: string;
   email: string;
-  phone?: string | null;
-  address?: Address | null;
+  phone?: string;
+  address?: Address;
   createdAt?: string;
   updatedAt?: string;
-}
-
-// Request DTOs
-export interface CreateCustomerDTO {
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone?: string | null;
-  address?: Address | null;
-}
-
-export interface UpdateCustomerDTO {
-  firstName?: string;
-  lastName?: string;
-  email?: string;
-  phone?: string | null;
-  address?: Partial<Address> | null;
-}
-
-// Response types
-export type GetCustomersResponse = Customer[];
-export type GetCustomerByIdResponse = Customer;
-export type CreateCustomerResponse = Customer;
-export type UpdateCustomerResponse = Customer;
-
-// Error handling
-export interface FieldError {
-  field: string;
-  message: string;
-  rejectedValue?: unknown;
-}
-
-export interface ErrorResponse {
-  timestamp?: string;
-  status: number;
-  error: string;
-  message: string;
-  path?: string;
-  errors?: FieldError[];
 }

@@ -5,49 +5,41 @@ interface ModalProps {
   onClose: () => void;
   title: string;
   children: React.ReactNode;
-  footer?: React.ReactNode;
 }
 
-export function Modal({
+export default function Modal({
   isOpen,
   onClose,
   title,
   children,
-  footer,
-}: Readonly<ModalProps>) {
+}: ModalProps) {
   useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+
     if (isOpen) {
+      document.addEventListener("keydown", handleEscape);
       document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "unset";
     }
 
     return () => {
+      document.removeEventListener("keydown", handleEscape);
       document.body.style.overflow = "unset";
     };
-  }, [isOpen]);
+  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
-      {/* Backdrop */}
-      <button
-        type="button"
-        className="absolute inset-0 cursor-default"
-        onClick={onClose}
-        aria-label="Close modal"
-        tabIndex={-1}
-      />
-
-      {/* Modal */}
-      <div className="relative bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto animate-fadeIn border border-gray-200 z-10">
-        {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b bg-gradient-to-r from-gray-50 to-white">
-          <h2 className="text-2xl font-bold text-gray-900">{title}</h2>
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
+      <div className="fixed inset-0 bg-black/50" onClick={onClose} />
+      <div className="relative bg-white rounded-lg shadow-xl max-w-md w-full mx-4 p-6">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-semibold">{title}</h2>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition-colors"
+            className="text-gray-400 hover:text-gray-600"
           >
             <svg
               className="w-6 h-6"
@@ -64,16 +56,7 @@ export function Modal({
             </svg>
           </button>
         </div>
-
-        {/* Content */}
-        <div className="p-6">{children}</div>
-
-        {/* Footer */}
-        {footer && (
-          <div className="flex items-center justify-end gap-3 p-6 border-t bg-gray-50">
-            {footer}
-          </div>
-        )}
+        {children}
       </div>
     </div>
   );
