@@ -1,6 +1,7 @@
 package com.nuwandev.cms.mapper;
 
 import com.nuwandev.cms.domain.Customer;
+import com.nuwandev.cms.dto.CustomerCreateRequestDto;
 import com.nuwandev.cms.dto.CustomerResponseDto;
 import org.mapstruct.Mapper;
 
@@ -12,4 +13,6 @@ public interface CustomerMapper {
     CustomerResponseDto toDto(Customer customer);
 
     List<CustomerResponseDto> toDtoList(List<Customer> customers);
+
+    Customer toEntity(CustomerCreateRequestDto dto);
 }

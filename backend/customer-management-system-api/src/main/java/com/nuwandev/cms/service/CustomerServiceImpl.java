@@ -13,6 +13,7 @@ import com.nuwandev.cms.mapper.CustomerMapper;
 import com.nuwandev.cms.repository.CustomerRepository;
 import com.nuwandev.cms.specification.CustomerSpecification;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -23,20 +24,16 @@ import java.util.List;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class CustomerServiceImpl implements CustomerService {
 
     private final CustomerRepository customerRepository;
     private final CustomerMapper customerMapper;
 
-    public CustomerServiceImpl(CustomerRepository customerRepository, CustomerMapper customerMapper) {
-        this.customerRepository = customerRepository;
-        this.customerMapper = customerMapper;
-    }
-
     @Override
     public CustomerResponseDto getCustomerById(String id) {
-        Customer c = customerRepository.findById(id).orElseThrow(() -> new CustomerNotFoundException(id));
-        return new CustomerResponseDto(c);
+        Customer customer = customerRepository.findById(id).orElseThrow(() -> new CustomerNotFoundException(id));
+        return customerMapper.toDto(customer);
     }
 
     @Override
@@ -44,10 +41,10 @@ public class CustomerServiceImpl implements CustomerService {
         Customer existing = customerRepository.findByEmail(dto.getEmail());
         if (existing != null) throw new CustomerAlreadyExistsException(dto.getEmail());
 
-        Customer customer = new Customer(dto);
+        Customer customer = customerMapper.toEntity(dto);
         Customer savedCustomer = customerRepository.save(customer);
 
-        return new CustomerResponseDto(savedCustomer);
+        return customerMapper.toDto(savedCustomer);
     }
 
     @Override
@@ -58,7 +55,7 @@ public class CustomerServiceImpl implements CustomerService {
         customer.setPhone(dto.getPhone());
         customer.setStatus(dto.getStatus());
         Customer savedCustomer = customerRepository.save(customer);
-        return new CustomerResponseDto(savedCustomer);
+        return customerMapper.toDto(savedCustomer);
     }
 
     @Override
@@ -74,10 +71,7 @@ public class CustomerServiceImpl implements CustomerService {
         Page<Customer> customerPage;
 
         if (search != null && !search.isBlank()) {
-            customerPage = customerRepository.findAll(
-                    CustomerSpecification.search(search),
-                    pageable
-            );
+            customerPage = customerRepository.findAll(CustomerSpecification.search(search), pageable);
         } else {
             customerPage = customerRepository.findAll(pageable);
         }

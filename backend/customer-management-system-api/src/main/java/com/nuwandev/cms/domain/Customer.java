@@ -1,6 +1,5 @@
 package com.nuwandev.cms.domain;
 
-import com.nuwandev.cms.dto.CustomerCreateRequestDto;
 import com.nuwandev.cms.enums.Status;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -40,14 +39,6 @@ public class Customer {
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;
-
-    public Customer(CustomerCreateRequestDto dto) {
-        this.firstName = dto.getFirstName();
-        this.lastName = dto.getLastName();
-        this.email = dto.getEmail();
-        this.phone = dto.getPhone();
-        if (dto.getStatus() != null) this.status = dto.getStatus();
-    }
 
     @PrePersist
     protected void onCreate() {
