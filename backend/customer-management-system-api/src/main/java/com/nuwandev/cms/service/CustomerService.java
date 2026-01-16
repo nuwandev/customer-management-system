@@ -1,15 +1,13 @@
 package com.nuwandev.cms.service;
 
 import com.nuwandev.cms.dto.CustomerCreateRequestDto;
+import com.nuwandev.cms.dto.CustomerPageResponseDto;
 import com.nuwandev.cms.dto.CustomerResponseDto;
 import com.nuwandev.cms.dto.CustomerUpdateRequestDto;
-
-import java.util.List;
+import com.nuwandev.cms.enums.CustomerSortField;
+import com.nuwandev.cms.enums.SortDirection;
 
 public interface CustomerService {
-
-    List<CustomerResponseDto> getAllCustomers();
-
     CustomerResponseDto getCustomerById(String id);
 
     CustomerResponseDto createCustomer(CustomerCreateRequestDto dto);
@@ -17,4 +15,6 @@ public interface CustomerService {
     CustomerResponseDto updateCustomer(String id, CustomerUpdateRequestDto dto);
 
     void deleteCustomer(String id);
+
+    CustomerPageResponseDto getCustomers(Integer page, Integer size, CustomerSortField sort, SortDirection order, String search);
 }
