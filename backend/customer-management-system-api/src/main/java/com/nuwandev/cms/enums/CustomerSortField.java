@@ -1,5 +1,8 @@
 package com.nuwandev.cms.enums;
 
+import lombok.Getter;
+
+@Getter
 public enum CustomerSortField {
 
     FIRST_NAME("firstName"),
@@ -11,9 +14,5 @@ public enum CustomerSortField {
 
     CustomerSortField(String field) {
         this.field = field;
-    }
-
-    public String getField() {
-        return field;
     }
 }
