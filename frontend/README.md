@@ -1,146 +1,141 @@
-# Customer Management System
+# Customer Management System - Frontend
 
-A deliberate implementation of a customer CRUD interface demonstrating pragmatic architectural choices for small-to-medium SPAs.
+A modern, professional customer management system built with Next.js 15, TypeScript, and Tailwind CSS.
 
-## Core Decisions
+## Features
 
-**Stack: Next.js 16 + React 19 + TypeScript**
+- ✅ **Customer List**: View all customers with pagination, sorting, and search
+- ✅ **Create Customer**: Add new customers with validation
+- ✅ **Edit Customer**: Update existing customer information
+- ✅ **Delete Customer**: Remove customers with confirmation dialog
+- ✅ **Responsive Design**: Mobile-friendly interface
+- ✅ **Real-time Updates**: Optimistic UI updates with React Query
+- ✅ **Form Validation**: Client-side validation with react-hook-form
+- ✅ **Loading States**: Smooth loading indicators
+- ✅ **Error Handling**: Comprehensive error messages
 
-- Next.js App Router eliminates routing boilerplate while preserving SSR escape hatch (unused here, but path exists)
-- React 19 Server Components avoided deliberately—this UI is inherently stateful and benefits from client-side rendering
-- TypeScript strict mode enforces contracts between frontend/backend without runtime overhead
+## Tech Stack
 
-**Why Not:**
+- **Framework**: Next.js 15 (App Router)
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS
+- **State Management**: React Query (TanStack Query)
+- **Forms**: React Hook Form
+- **HTTP Client**: Axios
+- **UI Components**: Custom components with Tailwind
 
-- No state management library (Redux/Zustand)—local state + custom hooks sufficient at current scale (<1000 customers)
-- No React Query—`useCustomers` hook provides equivalent caching with 40 lines of code
-- No component library—Material-UI/Ant Design add 500KB+ for features we don't need
+## Prerequisites
 
-## Architecture
+- Node.js 18+
+- npm or yarn
+- Spring Boot API running on `http://localhost:8081`
 
-```
-app/page.tsx              # 206 lines - orchestrates all customer operations
-features/customers/       # Self-contained module (API + UI)
-hooks/                    # useCustomers, useDebounce, useToast
-lib/apiClient.ts          # Centralized fetch wrapper with typed errors
-```
+## Getting Started
 
-**Feature-based structure** trades immediate discoverability for long-term modularity. `features/customers/` can be extracted to a package with zero refactoring.
+### 1. Install Dependencies
 
-**Trade-offs:**
+\`\`\`bash
+npm install
+\`\`\`
 
-- Client-side pagination (acceptable for <10k records; backend pagination trivial to add)
-- In-memory search filtering (fast until ~5k customers; backend search requires API change)
-- No optimistic updates (chose consistency over perceived speed)
-- Synchronous form validation (chose simplicity over async backend validation)
+### 2. Environment Variables
 
-## Constraints & Limitations
+Create a `.env.local` file:
 
-**Performance ceiling:** ~2000 customers before table rendering becomes noticeable (100ms+). Mitigation: windowing library or backend pagination.
+\`\`\`
+NEXT_PUBLIC_API_URL=http://localhost:8081
+\`\`\`
 
-**Error handling:** Network errors detected, HTTP errors surfaced to user. Missing: retry logic, offline support, request cancellation.
+### 3. Run Development Server
 
-**Type safety:** Frontend types manually sync'd with backend schema. Missing: OpenAPI/tRPC code generation.
+\`\`\`bash
+npm run dev
+\`\`\`
 
-**Testing:** None. Deliberate choice for portfolio scope. Production would require: Playwright E2E, Vitest unit tests on hooks/utils.
+Open [http://localhost:3000](http://localhost:3000)
 
-## What This Demonstrates
+### 4. Build for Production
 
-1. **Architectural restraint:** No unnecessary abstractions until proven needed
-2. **Separation of concerns:** API layer, business logic (hooks), presentation (components) clearly delineated
-3. **Type-driven development:** `Customer` interface is source of truth for form fields, table columns, validation
-4. **Error handling first-class:** `ApiError` vs `NetworkError` distinction enables granular user feedback
-5. **Debouncing pattern:** 300ms delay on search prevents API spam (reduces backend load 10x in practice)
+\`\`\`bash
+npm run build
+npm start
+\`\`\`
 
-## Scalability Path
+## Project Structure
 
-**Next 100 customers → 1000:** No changes needed.
+\`\`\`
+customer-management-ui/
+├── app/ # Next.js app directory
+│ ├── customers/ # Customer pages
+│ │ ├── page.tsx # List page
+│ │ ├── new/ # Create page
+│ │ └── [id]/edit/ # Edit page
+│ ├── layout.tsx # Root layout
+│ └── providers.tsx # React Query provider
+├── components/ # React components
+│ ├── ui/ # Reusable UI components
+│ └── customers/ # Customer-specific components
+├── lib/ # Utilities and configs
+│ ├── api/ # API client and endpoints
+│ ├── types/ # TypeScript types
+│ └── utils.ts # Helper functions
+└── public/ # Static assets
+\`\`\`
 
-**1000 → 10,000:**
+## API Integration
 
-- Add backend pagination (`?page=1&limit=50`)
-- Move search filtering to backend (`?query=john`)
-- Add request debouncing to API client (prevent duplicate calls)
+All API endpoints from your Spring Boot backend are integrated:
 
-**10,000+ or multi-tenant:**
+- `GET /api/v1/customers` - List with pagination, sorting, search
+- `GET /api/v1/customers/{id}` - Get single customer
+- `POST /api/v1/customers` - Create customer
+- `PUT /api/v1/customers/{id}` - Update customer
+- `DELETE /api/v1/customers/{id}` - Delete customer
 
-- Introduce React Query for cache invalidation across tabs
-- Add virtual scrolling (react-window) for table
-- Consider chunked CSV export for bulk operations
-- Extract customer feature to `@company/customer-module` package
+## Features in Detail
 
-## If I Rebuilt This
+### Pagination
 
-**Would add:**
+- Configurable page size (10, 25, 50, 100)
+- Previous/Next navigation
+- Page indicator
 
-- Zod schemas at API boundary (runtime type validation)
-- Skeleton loaders instead of spinner (perceived performance)
-- Keyboard shortcuts (CMD+K for search, arrow keys in table)
-- URL state management (search query, page, sort → shareable links)
+### Sorting
 
-**Would remove:**
+- Sort by: First Name, Last Name, Email, Created At
+- Order: Ascending or Descending
 
-- `DeleteConfirmModal`—industry standard is inline undo toast (less cognitive load)
-- Separate `SearchBar` component—can be collapsed into `page.tsx`
+### Search
 
-**Would keep:**
+- Real-time search across name and email
+- Debounced for performance
 
-- Feature-based structure (scales better than layer-based)
-- Custom hooks over context (explicit data flow)
-- Readonly props (catches mutation bugs at compile time)
+### Form Validation
 
-## Running
+- Required fields validation
+- Email format validation
+- Minimum length validation
+- Real-time error messages
 
-```bash
-npm install && npm run dev  # localhost:3000
-```
+## Best Practices Used
 
-Expects backend at `localhost:8080/api/customers`. See `lib/apiClient.ts` to configure.
+- ✅ TypeScript for type safety
+- ✅ React Query for server state management
+- ✅ Component composition and reusability
+- ✅ Separation of concerns (API, types, components)
+- ✅ Error boundaries and error handling
+- ✅ Loading and empty states
+- ✅ Responsive design
+- ✅ Accessibility considerations
+- ✅ Clean code and consistent formatting
 
-## Structure
+## Scripts
 
-```
-app/page.tsx                     # 206 lines - main UI controller
-features/customers/
-  ├── api.ts                     # HTTP layer: getAll, create, update, delete
-  ├── CustomerTable.tsx          # Sortable table with EmptyState
-  ├── CustomerRow.tsx            # Individual row with edit/delete actions
-  ├── CustomerForm.tsx           # Modal form (create + edit)
-  └── DeleteConfirmModal.tsx     # Confirmation dialog
-components/
-  ├── SearchBar.tsx              # Debounced input
-  ├── Pagination.tsx             # Page controls
-  └── ui/                        # 6 primitive components (Button, Input, etc)
-hooks/
-  ├── useCustomers.ts            # Data fetching + loading state
-  ├── useDebounce.ts             # 300ms delay hook
-  └── useToast.ts                # Notification queue
-lib/
-  ├── types.ts                   # Customer, Address interfaces
-  ├── apiClient.ts               # fetch wrapper with typed errors
-  └── errorHandler.ts            # ApiError vs NetworkError distinction
-```
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm start` - Start production server
+- `npm run lint` - Run ESLint
 
-## Design Rationale
+## License
 
-**Why feature modules?** Colocation reduces cognitive load. When fixing a customer bug, all relevant code is in one directory.
-
-**Why custom hooks over context?** Explicit dependency injection. `useCustomers(onError)` makes data flow traceable in IDE.
-
-**Why no form library?** Formik/React Hook Form optimize for complex validation. Our forms are 6 fields with synchronous validation—controlled components are simpler.
-
-**Why Tailwind v4?** Utility-first CSS co-located with JSX reduces style-logic gap. v4's JIT compiler eliminates unused CSS (18KB final bundle vs 50KB+ with CSS modules).
-
-**Why TypeScript strict mode?** Catches `undefined` access patterns that cause 40% of production bugs in our analytics. `strictNullChecks` alone prevents most React runtime errors.
-
-## Non-Goals
-
-- Mobile-first design (this is a desktop admin tool)
-- Offline support (backend is source of truth)
-- Real-time collaboration (no WebSocket complexity)
-- Internationalization (English-only scope)
-- Accessibility beyond keyboard navigation (would require ARIA audit)
-
----
-
-Built to demonstrate **intentional architecture** and **scalability awareness**, not feature completeness.
+MIT
