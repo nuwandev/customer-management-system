@@ -23,7 +23,10 @@ apiClient.interceptors.request.use(
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
-    console.error("[API Error]", error.response?.data || error.message);
+    if (!error.response) {
+      error.isNetworkError = true;
+    }
+
     return Promise.reject(error);
   },
 );
