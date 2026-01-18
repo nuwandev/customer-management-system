@@ -11,6 +11,7 @@ import { Select } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CustomerTable } from "@/components/customers/customer-table";
 import { Pagination } from "@/components/customers/pagination";
+import BackendOfflineCard from "@/components/ui/BackendOfflineCard";
 
 export default function CustomersPage() {
   const [page, setPage] = useState(0);
@@ -27,6 +28,8 @@ export default function CustomersPage() {
     queryKey: ["customers", page, size, sort, order, search],
     queryFn: () =>
       customersApi.getCustomers({ page, size, sort, order, search }),
+    retry: false,
+    refetchOnWindowFocus: false,
   });
 
   // Delete mutation
@@ -44,23 +47,30 @@ export default function CustomersPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (window.confirm("Are you sure you want to delete this customer?")) {
+    if (globalThis.confirm("Are you sure you want to delete this customer?")) {
       deleteMutation.mutate(id);
     }
   };
 
+  const isBackendOffline =
+    error && typeof error === "object" && "isNetworkError" in error;
+
+  if (isBackendOffline) {
+    return <BackendOfflineCard />;
+  }
+
   if (error) {
     return (
-      <Card>
-        <CardContent className="pt-6">
-          <div className="text-center text-red-600">
-            <p className="text-lg font-semibold">Error loading customers</p>
-            <p className="text-sm mt-2">
-              {error instanceof Error ? error.message : "An error occurred"}
-            </p>
-          </div>
-        </CardContent>
-      </Card>
+      <div className="text-center py-12">
+        <h3 className="mt-4 text-lg font-medium text-red-600">
+          Failed to load customers
+        </h3>
+        <p className="mt-2 text-sm text-gray-500">
+          {typeof error === "string"
+            ? error
+            : "An unexpected error occurred. Please try again later."}
+        </p>
+      </div>
     );
   }
 
@@ -136,7 +146,7 @@ export default function CustomersPage() {
           )}
 
           {/* Empty State */}
-          {!isLoading && data && data.content.length === 0 && (
+          {!isLoading && data?.content.length === 0 && (
             <div className="text-center py-12">
               <svg
                 className="mx-auto h-12 w-12 text-gray-400"
