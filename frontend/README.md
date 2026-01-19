@@ -17,7 +17,8 @@ A modern, responsive customer management dashboard built with Next.js 16, React 
 
 ### Customer Management
 
-- **List View** - Paginated customer table with sorting and search
+-- **List View** - Paginated customer table with sorting, search, and dynamic page size selection
+
 - **Create** - Add new customers with form validation
 - **Edit** - Update customer information
 - **Delete** - Remove customers with confirmation dialog
@@ -37,7 +38,7 @@ A modern, responsive customer management dashboard built with Next.js 16, React 
 ### Performance
 
 - **Data Caching** - React Query automatic cache management
-- **Pagination** - Efficient data loading (10 records per page)
+  -- **Pagination** - Efficient data loading with user-selectable page size (10, 25, 50, 100 records per page)
 - **Stale-While-Revalidate** - Background data refresh
 - **Query Invalidation** - Smart cache updates on mutations
 
@@ -214,7 +215,9 @@ npm start
 - First, Previous, Next, Last navigation
 - Page number display
 - Total pages and records count
+- Page size dropdown (10, 25, 50, 100) next to page indicator
 - Disabled states for boundary pages
+- User's page size choice is remembered and persists between visits
 
 ## 🎨 UI Components
 
@@ -302,7 +305,7 @@ CMD ["npm", "start"]
 2. **Server Components** - Faster initial page loads
 3. **Code Splitting** - Automatic route-based splitting
 4. **Image Optimization** - Next.js Image component
-5. **Pagination** - Limited data per page (10 records)
+5. **Pagination** - Limited data per page, with user-selectable page size (10, 25, 50, 100 records)
 
 ## 🐛 Common Issues
 

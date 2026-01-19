@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { customersApi } from "@/lib/api/customers";
@@ -15,7 +15,21 @@ import BackendOfflineCard from "@/components/ui/BackendOfflineCard";
 
 export default function CustomersPage() {
   const [page, setPage] = useState(0);
-  const [size, setSize] = useState(10);
+  // Persist page size in localStorage
+  const PAGE_SIZE_KEY = "customers_page_size";
+  const [size, setSize] = useState(() => {
+    if (typeof window !== "undefined") {
+      const stored = window.localStorage.getItem(PAGE_SIZE_KEY);
+      return stored ? Number(stored) : 10;
+    }
+    return 10;
+  });
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem(PAGE_SIZE_KEY, String(size));
+    }
+  }, [size]);
   const [sort, setSort] = useState<SortField>(SortField.CREATED_AT);
   const [order, setOrder] = useState<SortOrder>(SortOrder.ASC);
   const [search, setSearch] = useState("");
@@ -135,6 +149,8 @@ export default function CustomersPage() {
               <option value={SortOrder.ASC}>Ascending</option>
               <option value={SortOrder.DESC}>Descending</option>
             </Select>
+
+            {/* ...existing code... */}
           </div>
 
           {/* Loading State */}
@@ -199,6 +215,11 @@ export default function CustomersPage() {
                   onPageChange={setPage}
                   isFirst={data.isFirst}
                   isLast={data.isLast}
+                  pageSize={size}
+                  onPageSizeChange={(newSize: number) => {
+                    setSize(newSize);
+                    setPage(0);
+                  }}
                 />
               </div>
 
