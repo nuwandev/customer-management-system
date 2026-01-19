@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { customersApi } from "@/lib/api/customers";
@@ -15,7 +15,22 @@ import BackendOfflineCard from "@/components/ui/BackendOfflineCard";
 
 export default function CustomersPage() {
   const [page, setPage] = useState(0);
-  const [size, setSize] = useState(10);
+  // Persist page size in localStorage
+  const PAGE_SIZE_KEY = "customers_page_size";
+  const [size, setSize] = useState(() => {
+    if (typeof window !== "undefined") {
+      const stored = window.localStorage.getItem(PAGE_SIZE_KEY);
+      return stored ? Number(stored) : 10;
+    }
+    return 10;
+  });
+
+  // Update localStorage when size changes
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem(PAGE_SIZE_KEY, String(size));
+    }
+  }, [size]);
   const [sort, setSort] = useState<SortField>(SortField.CREATED_AT);
   const [order, setOrder] = useState<SortOrder>(SortOrder.ASC);
   const [search, setSearch] = useState("");
@@ -87,7 +102,7 @@ export default function CustomersPage() {
         </CardHeader>
         <CardContent>
           {/* Search and Filters */}
-          <div className="mb-6 grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="mb-6 grid grid-cols-1 md:grid-cols-5 gap-4">
             <form onSubmit={handleSearch} className="md:col-span-2 flex gap-2">
               <Input
                 placeholder="Search by name or email..."
@@ -134,6 +149,22 @@ export default function CustomersPage() {
             >
               <option value={SortOrder.ASC}>Ascending</option>
               <option value={SortOrder.DESC}>Descending</option>
+            </Select>
+
+            {/* Page Size Dropdown */}
+            <Select
+              value={size}
+              onChange={(e) => {
+                setSize(Number(e.target.value));
+                setPage(0);
+              }}
+              label="Rows per page"
+            >
+              {[10, 25, 50, 100].map((option) => (
+                <option key={option} value={option}>
+                  {option} per page
+                </option>
+              ))}
             </Select>
           </div>
 
