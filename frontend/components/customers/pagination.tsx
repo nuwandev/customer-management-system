@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { Button } from '@/components/ui/button';
+import { Button } from "@/components/ui/button";
 
-import { Select } from '@/components/ui/select';
+import { Select } from "@/components/ui/select";
 
 interface PaginationProps {
   currentPage: number;
@@ -43,17 +43,17 @@ export function Pagination({
       </div>
       <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
         <div className="flex items-center gap-4">
-          <p className="text-sm text-gray-700">
-            Page <span className="font-medium">{currentPage + 1}</span> of{' '}
+          <p className="text-sm text-gray-700 w-full">
+            Page <span className="font-medium">{currentPage + 1}</span> of{" "}
             <span className="font-medium">{totalPages}</span>
           </p>
           <Select
             value={pageSize}
-            onChange={e => onPageSizeChange(Number(e.target.value))}
+            onChange={(e) => onPageSizeChange(Number(e.target.value))}
             className="w-32 ml-2"
             aria-label="Rows per page"
           >
-            {[10, 25, 50, 100].map(option => (
+            {[10, 25, 50, 100].map((option) => (
               <option key={option} value={option}>
                 {option} per page
               </option>

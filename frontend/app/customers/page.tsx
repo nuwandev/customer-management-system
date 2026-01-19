@@ -208,7 +208,6 @@ export default function CustomersPage() {
                 }
               />
 
-
               <div className="mt-4">
                 <Pagination
                   currentPage={data.page}
