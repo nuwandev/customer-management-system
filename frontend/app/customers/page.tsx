@@ -25,7 +25,6 @@ export default function CustomersPage() {
     return 10;
   });
 
-  // Update localStorage when size changes
   useEffect(() => {
     if (typeof window !== "undefined") {
       window.localStorage.setItem(PAGE_SIZE_KEY, String(size));
@@ -102,7 +101,7 @@ export default function CustomersPage() {
         </CardHeader>
         <CardContent>
           {/* Search and Filters */}
-          <div className="mb-6 grid grid-cols-1 md:grid-cols-5 gap-4">
+          <div className="mb-6 grid grid-cols-1 md:grid-cols-4 gap-4">
             <form onSubmit={handleSearch} className="md:col-span-2 flex gap-2">
               <Input
                 placeholder="Search by name or email..."
@@ -151,21 +150,7 @@ export default function CustomersPage() {
               <option value={SortOrder.DESC}>Descending</option>
             </Select>
 
-            {/* Page Size Dropdown */}
-            <Select
-              value={size}
-              onChange={(e) => {
-                setSize(Number(e.target.value));
-                setPage(0);
-              }}
-              label="Rows per page"
-            >
-              {[10, 25, 50, 100].map((option) => (
-                <option key={option} value={option}>
-                  {option} per page
-                </option>
-              ))}
-            </Select>
+            {/* ...existing code... */}
           </div>
 
           {/* Loading State */}
@@ -223,6 +208,7 @@ export default function CustomersPage() {
                 }
               />
 
+
               <div className="mt-4">
                 <Pagination
                   currentPage={data.page}
@@ -230,6 +216,11 @@ export default function CustomersPage() {
                   onPageChange={setPage}
                   isFirst={data.isFirst}
                   isLast={data.isLast}
+                  pageSize={size}
+                  onPageSizeChange={(newSize: number) => {
+                    setSize(newSize);
+                    setPage(0);
+                  }}
                 />
               </div>
 
